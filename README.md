@@ -17,7 +17,7 @@ Available Packages
 
 The following packages are available on [nuget.org](https://nuget.org) that provide access to the setup configuration API.
 
-*   **Microsoft.VisualStudio.Setup.Configuration.Native**
+*   **[Microsoft.VisualStudio.Setup.Configuration.Native](https://www.nuget.org/packages/Microsoft.VisualStudio.Setup.Configuration.Native/)**
 
     Adds the header location and automatically links the library. You only need to add the `#include` as shown below.
 
@@ -25,7 +25,7 @@ The following packages are available on [nuget.org](https://nuget.org) that prov
     #include <Setup.Configuration.h>
     ```
 
-*   **Microsoft.VisualStudio.Setup.Configuration.Interop**
+*   **[Microsoft.VisualStudio.Setup.Configuration.Interop](https://www.nuget.org/packages/Microsoft.VisualStudio.Setup.Configuration.Interop/)**
 
     Provides embeddable interop types. If the interop types are embedded you do not need to redistribute additional assemblies. Simply instantiate the `SetupConfiguration` runtime callable wrapper (RCW) as shown below.
 
@@ -36,4 +36,4 @@ The following packages are available on [nuget.org](https://nuget.org) that prov
 Updates
 -------
 
-For the most recent updates to these samples, please see https://github.com/microsoft/setup.configuration.
+For the most recent updates to these samples, please see [https://github.com/microsoft/vs-setup-samples](https://github.com/microsoft/vs-setup-samples).
