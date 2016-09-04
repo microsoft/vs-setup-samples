@@ -7,5 +7,18 @@
 
 #include "targetver.h"
 
+#define WIN32_LEAN_AND_MEAN
+
 #include <windows.h>
-#include <stdio.h>
+#include <crtdbg.h>
+#include <comip.h>
+#include <comdef.h>
+#include <comutil.h>
+
+#include <algorithm>
+#include <iostream>
+#include <memory>
+#include <vector>
+
+#include <Setup.Configuration.h>
+#include "Helpers.h"
