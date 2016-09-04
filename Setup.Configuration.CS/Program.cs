@@ -39,14 +39,14 @@ internal class Program
                 }
             }
             while (fetched > 0);
+
+            return 0;
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error 0x{ex.HResult:x8}: {ex.Message}");
             return ex.HResult;
         }
-
-        return 0;
     }
 
     private static ISetupConfiguration GetQuery()
@@ -95,9 +95,10 @@ internal class Program
 
     private static void PrintWorkloads(ISetupPackageReference[] packages)
     {
-        var workloads = packages
-            .Where(package => string.Equals(package.GetType(), "Workload", StringComparison.OrdinalIgnoreCase))
-            .OrderBy(package => package.GetId());
+        var workloads = from package in packages
+                        where string.Equals(package.GetType(), "Workload", StringComparison.OrdinalIgnoreCase)
+                        orderby package.GetId()
+                        select package;
 
         foreach (var workload in workloads)
         {
