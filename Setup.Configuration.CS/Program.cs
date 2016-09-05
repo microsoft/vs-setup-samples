@@ -108,6 +108,6 @@ internal class Program
 
     [DllImport("Microsoft.VisualStudio.Setup.Configuration.Native.dll", ExactSpelling = true, PreserveSig = true)]
     private static extern int GetSetupConfiguration(
-        out ISetupConfiguration configuration,
+        [MarshalAs(UnmanagedType.Interface), Out] out ISetupConfiguration configuration,
         IntPtr reserved);
 }

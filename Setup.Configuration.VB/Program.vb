@@ -3,8 +3,6 @@
 ' Licensed under the MIT license. See LICENSE.txt in the project root for license information.
 ' </copyright>
 
-Imports System
-Imports System.Linq
 Imports System.Runtime.InteropServices
 Imports Microsoft.VisualStudio.Setup.Configuration
 
@@ -85,7 +83,8 @@ Friend Module Program
         Next
     End Sub
 
-    Private Declare Unicode Function GetSetupConfiguration Lib "Microsoft.VisualStudio.Setup.Configuration.Native.dll" _
-        (ByRef configuration As ISetupConfiguration, reserved As IntPtr) As Integer
+    Private Declare Unicode Function GetSetupConfiguration Lib "Microsoft.VisualStudio.Setup.Configuration.Native.dll" (
+        <MarshalAs(UnmanagedType.Interface), Out> ByRef configuration As ISetupConfiguration,
+        reserved As IntPtr) As Integer
 
 End Module
