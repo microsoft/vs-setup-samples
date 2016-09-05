@@ -213,7 +213,8 @@ void PrintPackageReference(
         throw win32_exception(hr, "failed to get reference Id");
     }
 
-    if (!!bstrId) // Work around preview 4 bug
+    // Check that an ID is registered; unexpected otherwise, but would throw in RCW.
+    if (!!bstrId)
     {
         wcout << bstrId;
     }
