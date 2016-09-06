@@ -13,6 +13,7 @@ _COM_SMARTPTR_TYPEDEF(ISetupInstance2, __uuidof(ISetupInstance2));
 _COM_SMARTPTR_TYPEDEF(IEnumSetupInstances, __uuidof(IEnumSetupInstances));
 _COM_SMARTPTR_TYPEDEF(ISetupConfiguration, __uuidof(ISetupConfiguration));
 _COM_SMARTPTR_TYPEDEF(ISetupConfiguration2, __uuidof(ISetupConfiguration2));
+_COM_SMARTPTR_TYPEDEF(ISetupHelper, __uuidof(ISetupHelper));
 _COM_SMARTPTR_TYPEDEF(ISetupPackageReference, __uuidof(ISetupPackageReference));
 
 module_ptr GetQuery(
@@ -20,7 +21,8 @@ module_ptr GetQuery(
 );
 
 void PrintInstance(
-    _In_ ISetupInstance* pInstance
+    _In_ ISetupInstance* pInstance,
+    _In_ ISetupHelper* pHelper
 );
 
 void PrintPackageReference(
@@ -55,13 +57,15 @@ DWORD wmain(
             throw win32_exception(hr, "failed to query all instances");
         }
 
+        ISetupHelperPtr helper(query);
+
         ISetupInstance* pInstances[1] = {};
         hr = e->Next(1, pInstances, NULL);
         while (S_OK == hr)
         {
             // Wrap instance without AddRef'ing.
             ISetupInstancePtr instance(pInstances[0], false);
-            PrintInstance(instance);
+            PrintInstance(instance, helper);
 
             hr = e->Next(1, pInstances, NULL);
         }
@@ -138,7 +142,8 @@ module_ptr GetQuery(
 }
 
 void PrintInstance(
-    _In_ ISetupInstance* pInstance
+    _In_ ISetupInstance* pInstance,
+    _In_ ISetupHelper* pHelper
 )
 {
     HRESULT hr = S_OK;
@@ -157,6 +162,20 @@ void PrintInstance(
     }
 
     wcout << L"InstanceId: " << bstrId << L" (" << (eComplete == state ? L"Complete" : L"Incomplete") << L")" << endl;
+
+    bstr_t bstrVersion;
+    if (FAILED(hr = instance->GetInstallationVersion(bstrVersion.GetAddress())))
+    {
+        throw win32_exception(hr, "failed to get InstallationVersion");
+    }
+
+    ULONGLONG ullVersion;
+    if (FAILED(hr = pHelper->ParseVersion(bstrVersion, &ullVersion)))
+    {
+        throw win32_exception(hr, "failed to parse InstallationVersion");
+    }
+
+    wcout << L"InstallationVersion: " << bstrVersion << L" (" << ullVersion << L")" << endl;
 
     // Reboot may have been required before the installation path was created.
     if ((eLocal & state) == eLocal)

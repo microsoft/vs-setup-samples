@@ -28,6 +28,8 @@ internal class Program
             var query2 = (ISetupConfiguration2)query;
             var e = query2.EnumAllInstances();
 
+            var helper = (ISetupHelper)query;
+
             int fetched;
             var instances = new ISetupInstance[1];
             do
@@ -35,7 +37,7 @@ internal class Program
                 e.Next(1, instances, out fetched);
                 if (fetched > 0)
                 {
-                    PrintInstance(instances[0]);
+                    PrintInstance(instances[0], helper);
                 }
             }
             while (fetched > 0);
@@ -71,11 +73,16 @@ internal class Program
         }
     }
 
-    private static void PrintInstance(ISetupInstance instance)
+    private static void PrintInstance(ISetupInstance instance, ISetupHelper helper)
     {
         var instance2 = (ISetupInstance2)instance;
         var state = instance2.GetState();
         Console.WriteLine($"InstanceId: {instance2.GetInstanceId()} ({(state == InstanceState.Complete ? "Complete" : "Incomplete")})");
+
+        var installationVersion = instance.GetInstallationVersion();
+        var version = helper.ParseVersion(installationVersion);
+
+        Console.WriteLine($"InstallationVersion: {installationVersion} ({version})");
 
         if ((state & InstanceState.Local) == InstanceState.Local)
         {

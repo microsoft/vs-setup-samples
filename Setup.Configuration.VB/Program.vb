@@ -23,12 +23,14 @@ Friend Module Program
             Dim query2 = CType(query, ISetupConfiguration2)
             Dim e = query2.EnumAllInstances()
 
+            Dim helper = CType(query, ISetupHelper)
+
             Dim fetched = 0
             Dim instances(1) As ISetupInstance
             Do
                 e.Next(1, instances, fetched)
                 If fetched > 0 Then
-                    PrintInstance(instances(0))
+                    PrintInstance(instances(0), helper)
                 End If
             Loop Until fetched = 0
 
@@ -54,10 +56,15 @@ Friend Module Program
         End Try
     End Function
 
-    Private Sub PrintInstance(instance As ISetupInstance)
+    Private Sub PrintInstance(instance As ISetupInstance, helper As ISetupHelper)
         Dim instance2 = CType(instance, ISetupInstance2)
         Dim state = instance2.GetState()
         Console.WriteLine($"InstanceId: {instance2.GetInstanceId()} ({If(state = InstanceState.Complete, "Complete", "Incomplete")})")
+
+        Dim installationVersion = instance2.GetInstallationVersion()
+        Dim version = helper.ParseVersion(installationVersion)
+
+        Console.WriteLine($"InstallationVersion: {installationVersion} ({version})")
 
         If (state And InstanceState.Local) = InstanceState.Local Then
             Console.WriteLine($"InstallationPath: {instance2.GetInstallationPath()}")
