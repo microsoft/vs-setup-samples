@@ -37,3 +37,13 @@ Updates
 -------
 
 For the most recent updates to these samples, please see [https://github.com/microsoft/vs-setup-samples](https://github.com/microsoft/vs-setup-samples).
+
+Related
+-------
+
+We have published a number of related projects that are intended for real-world scenarios and may show a more extensive use of the APIs than shown in these samples.
+
+* [VSSetup.PowerShell](https://github.com/Microsoft/vssetup.powershell)
+  PowerShell module to interact with Visual Studio Setup 
+* [VSIXBootstrapper](https://github.com/Microsoft/vsixbootstrapper)
+  An installer that can be chained with other packages to locate the latest VSIXInstaller.exe to use for installing VSIX extensions
