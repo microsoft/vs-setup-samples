@@ -47,3 +47,5 @@ We have published a number of related projects that are intended for real-world 
   PowerShell module to interact with Visual Studio Setup 
 * [VSIXBootstrapper](https://github.com/Microsoft/vsixbootstrapper)
   An installer that can be chained with other packages to locate the latest VSIXInstaller.exe to use for installing VSIX extensions
+* [vswhere](https://github.com/Microsoft/vswhere)
+  Locate Visual Studio 2017 and newer installations
