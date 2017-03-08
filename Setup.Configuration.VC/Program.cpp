@@ -16,10 +16,6 @@ _COM_SMARTPTR_TYPEDEF(ISetupConfiguration2, __uuidof(ISetupConfiguration2));
 _COM_SMARTPTR_TYPEDEF(ISetupHelper, __uuidof(ISetupHelper));
 _COM_SMARTPTR_TYPEDEF(ISetupPackageReference, __uuidof(ISetupPackageReference));
 
-module_ptr GetQuery(
-    _Outptr_result_maybenull_ ISetupConfiguration** ppQuery
-);
-
 void PrintInstance(
     _In_ ISetupInstance* pInstance,
     _In_ ISetupHelper* pHelper
@@ -44,14 +40,23 @@ DWORD wmain(
     try
     {
         CoInitializer init;
-
         ISetupConfigurationPtr query;
-        auto lib = GetQuery(&query);
+
+        auto hr = query.CreateInstance(__uuidof(SetupConfiguration));
+        if (REGDB_E_CLASSNOTREG == hr)
+        {
+            cout << "The query API is not registered. Assuming no instances are installed." << endl;
+            return 0;
+        }
+        else if (FAILED(hr))
+        {
+            throw win32_exception(hr, "failed to create query class");
+        }
 
         ISetupConfiguration2Ptr query2(query);
         IEnumSetupInstancesPtr e;
 
-        auto hr = query2->EnumAllInstances(&e);
+        hr = query2->EnumAllInstances(&e);
         if (FAILED(hr))
         {
             throw win32_exception(hr, "failed to query all instances");
@@ -87,58 +92,6 @@ DWORD wmain(
     }
 
     return ERROR_SUCCESS;
-}
-
-module_ptr GetQuery(
-    _Outptr_result_maybenull_ ISetupConfiguration** ppQuery
-)
-{
-    typedef HRESULT(CALLBACK* LPFNGETCONFIGURATION)(_Out_ ISetupConfiguration** ppConfiguration, _Reserved_ LPVOID pReserved);
-
-    const WCHAR wzLibrary[] = L"Microsoft.VisualStudio.Setup.Configuration.Native.dll";
-    const CHAR szFunction[] = "GetSetupConfiguration";
-
-    // As with COM, make sure we return a NULL pointer on error.
-    _ASSERT(ppQuery);
-    *ppQuery = NULL;
-
-    ISetupConfigurationPtr query;
-
-    // Try to create the CoCreate the class; if that fails, likely no instances are registered.
-    auto hr = query.CreateInstance(__uuidof(SetupConfiguration));
-    if (SUCCEEDED(hr))
-    {
-        *ppQuery = query;
-        return nullptr;
-    }
-    else if (REGDB_E_CLASSNOTREG != hr)
-    {
-        throw win32_exception(hr, "failed to create query class");
-    }
-
-    // We can otherwise attempt to load the library from the PATH.
-    auto hConfiguration = ::LoadLibraryW(wzLibrary);
-    if (!hConfiguration)
-    {
-        throw win32_exception(REGDB_E_CLASSNOTREG, "failed to load configuration library");
-    }
-
-    // Make sure the module is freed when it falls out of scope.
-    module_ptr lib(&hConfiguration);
-
-    auto fnGetConfiguration = reinterpret_cast<LPFNGETCONFIGURATION>(::GetProcAddress(hConfiguration, szFunction));
-    if (!fnGetConfiguration)
-    {
-        throw win32_exception(CLASS_E_CLASSNOTAVAILABLE, "could not find the expected entry point");
-    }
-
-    hr = fnGetConfiguration(ppQuery, NULL);
-    if (FAILED(hr))
-    {
-        throw win32_exception(hr, "failed to get query class");
-    }
-
-    return lib;
 }
 
 void PrintInstance(

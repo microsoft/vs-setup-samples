@@ -19,7 +19,7 @@ Friend Module Program
     ''' <param name="args">Command line arguments passed to the program.</param>
     Friend Function Main(args As String()) As Integer
         Try
-            Dim query = GetQuery()
+            Dim query = New SetupConfiguration()
             Dim query2 = CType(query, ISetupConfiguration2)
             Dim e = query2.EnumAllInstances()
 
@@ -35,24 +35,12 @@ Friend Module Program
             Loop Until fetched = 0
 
             Return 0
+        Catch ex As COMException When ex.HResult = REGDB_E_CLASSNOTREG
+            Console.WriteLine("The query API is not registered. Assuming no instances are installed.")
+            Return 0
         Catch ex As Exception
             Console.Error.WriteLine($"Error 0x{ex.HResult:x8}: {ex.Message}")
             Return ex.HResult
-        End Try
-    End Function
-
-    Private Function GetQuery() As ISetupConfiguration
-        Try
-            ' Try to CoCreate the class object.
-            Return New SetupConfiguration()
-        Catch ex As COMException When ex.HResult = REGDB_E_CLASSNOTREG
-            ' Try to get the class object using app-local call.
-            Dim query As ISetupConfiguration = Nothing
-            Dim result = GetSetupConfiguration(query, IntPtr.Zero)
-
-            If result < 0 Then Throw New COMException("Failed to get query class", result)
-
-            Return query
         End Try
     End Function
 

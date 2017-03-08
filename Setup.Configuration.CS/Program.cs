@@ -24,7 +24,7 @@ internal class Program
     {
         try
         {
-            var query = GetQuery();
+            var query = new SetupConfiguration();
             var query2 = (ISetupConfiguration2)query;
             var e = query2.EnumAllInstances();
 
@@ -44,32 +44,15 @@ internal class Program
 
             return 0;
         }
+        catch (COMException ex) when (ex.HResult == REGDB_E_CLASSNOTREG)
+        {
+            Console.WriteLine("The query API is not registered. Assuming no instances are installed.");
+            return 0;
+        }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"Error 0x{ex.HResult:x8}: {ex.Message}");
             return ex.HResult;
-        }
-    }
-
-    private static ISetupConfiguration GetQuery()
-    {
-        try
-        {
-            // Try to CoCreate the class object.
-            return new SetupConfiguration();
-        }
-        catch (COMException ex) when (ex.HResult == REGDB_E_CLASSNOTREG)
-        {
-            // Try to get the class object using app-local call.
-            ISetupConfiguration query;
-            var result = GetSetupConfiguration(out query, IntPtr.Zero);
-
-            if (result < 0)
-            {
-                throw new COMException("Failed to get query", result);
-            }
-
-            return query;
         }
     }
 
