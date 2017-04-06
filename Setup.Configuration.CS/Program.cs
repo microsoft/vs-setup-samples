@@ -95,9 +95,4 @@ internal class Program
             Console.WriteLine($"    {workload.GetId()}");
         }
     }
-
-    [DllImport("Microsoft.VisualStudio.Setup.Configuration.Native.dll", ExactSpelling = true, PreserveSig = true)]
-    private static extern int GetSetupConfiguration(
-        [MarshalAs(UnmanagedType.Interface), Out] out ISetupConfiguration configuration,
-        IntPtr reserved);
 }

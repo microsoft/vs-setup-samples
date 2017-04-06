@@ -78,8 +78,4 @@ Friend Module Program
         Next
     End Sub
 
-    Private Declare Unicode Function GetSetupConfiguration Lib "Microsoft.VisualStudio.Setup.Configuration.Native.dll" (
-        <MarshalAs(UnmanagedType.Interface), Out> ByRef configuration As ISetupConfiguration,
-        reserved As IntPtr) As Integer
-
 End Module
