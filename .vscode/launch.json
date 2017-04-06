@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch (C++)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/Setup.Configuration.VC/bin/Debug/Win32/Setup.Configuration.VC.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "externalConsole": false,
+            "symbolSearchPath": "srv*${env:TEMP}/SymbolCache*http://msdl.microsoft.com/download/symbols"
+        }
+    ]
+}
