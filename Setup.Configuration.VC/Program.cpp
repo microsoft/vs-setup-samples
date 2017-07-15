@@ -16,6 +16,7 @@ _COM_SMARTPTR_TYPEDEF(ISetupConfiguration2, __uuidof(ISetupConfiguration2));
 _COM_SMARTPTR_TYPEDEF(ISetupHelper, __uuidof(ISetupHelper));
 _COM_SMARTPTR_TYPEDEF(ISetupPackageReference, __uuidof(ISetupPackageReference));
 _COM_SMARTPTR_TYPEDEF(ISetupPropertyStore, __uuidof(ISetupPropertyStore));
+_COM_SMARTPTR_TYPEDEF(ISetupInstanceCatalog, __uuidof(ISetupInstanceCatalog));
 
 void PrintInstance(
     _In_ ISetupInstance* pInstance,
@@ -149,6 +150,19 @@ void PrintInstance(
         }
 
         wcout << L"InstallationPath: " << bstrInstallationPath << endl;
+    }
+
+    ISetupInstanceCatalogPtr catalog;
+    if (SUCCEEDED(instance->QueryInterface(&catalog)))
+    {
+        VARIANT_BOOL fIsPrerelease;
+        if (FAILED(hr = catalog->IsPrerelease(&fIsPrerelease)))
+        {
+            throw win32_exception(hr, "failed to get IsPrerelease");
+        }
+
+        const auto wzIsPrerelease = VARIANT_TRUE == fIsPrerelease ? L"true" : L"false";
+        wcout << L"IsPrerelease: " << wzIsPrerelease << endl;
     }
 
     // Reboot may have been required before the product package was registered (last).
