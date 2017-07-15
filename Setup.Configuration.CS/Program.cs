@@ -80,7 +80,23 @@ internal class Program
             PrintWorkloads(instance2.GetPackages());
         }
 
+        Console.WriteLine("Properties:");
+        PrintProperties(instance2);
+
         Console.WriteLine();
+    }
+
+    private static void PrintProperties(ISetupInstance2 instance)
+    {
+        var store = instance.GetProperties();
+        var properties = from name in store.GetNames()
+                         orderby name
+                         select new { Name = name, Value = store.GetValue(name) };
+
+        foreach (var prop in properties)
+        {
+            Console.WriteLine($"    {prop.Name}: {prop.Value}");
+        }
     }
 
     private static void PrintWorkloads(ISetupPackageReference[] packages)

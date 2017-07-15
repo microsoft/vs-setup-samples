@@ -65,7 +65,21 @@ Friend Module Program
             PrintWorkloads(instance2.GetPackages())
         End If
 
+        Console.WriteLine("Properties:")
+        PrintProperties(instance2)
+
         Console.WriteLine()
+    End Sub
+
+    Private Sub PrintProperties(instance As ISetupInstance2)
+        Dim store = instance.GetProperties()
+        Dim properties = From name In store.GetNames()
+                         Order By name
+                         Select New With {.Name = name, .Value = store.GetValue(name)}
+
+        For Each prop In properties
+            Console.WriteLine($"    {prop.Name}: {prop.Value}")
+        Next
     End Sub
 
     Private Sub PrintWorkloads(packages As ISetupPackageReference())

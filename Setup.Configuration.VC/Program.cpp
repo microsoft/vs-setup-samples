@@ -15,6 +15,7 @@ _COM_SMARTPTR_TYPEDEF(ISetupConfiguration, __uuidof(ISetupConfiguration));
 _COM_SMARTPTR_TYPEDEF(ISetupConfiguration2, __uuidof(ISetupConfiguration2));
 _COM_SMARTPTR_TYPEDEF(ISetupHelper, __uuidof(ISetupHelper));
 _COM_SMARTPTR_TYPEDEF(ISetupPackageReference, __uuidof(ISetupPackageReference));
+_COM_SMARTPTR_TYPEDEF(ISetupPropertyStore, __uuidof(ISetupPropertyStore));
 
 void PrintInstance(
     _In_ ISetupInstance* pInstance,
@@ -23,6 +24,14 @@ void PrintInstance(
 
 void PrintPackageReference(
     _In_ ISetupPackageReference* pPackage
+);
+
+void PrintProperties(
+    _In_ ISetupInstance2* pInstance
+);
+
+void PrintVariant(
+    _In_ LPVARIANT pvt
 );
 
 void PrintWorkloads(
@@ -169,6 +178,9 @@ void PrintInstance(
         PrintWorkloads(psa);
     }
 
+    wcout << L"Properties:" << endl;
+    PrintProperties(instance);
+
     wcout << endl;
 }
 
@@ -190,6 +202,69 @@ void PrintPackageReference(
     {
         wcout << bstrId;
     }
+}
+
+void PrintProperties(
+    _In_ ISetupInstance2* pInstance
+)
+{
+    HRESULT hr = S_OK;
+    ISetupPropertyStorePtr store;
+    LPSAFEARRAY psaNames = NULL;
+
+    if (FAILED(hr = pInstance->GetProperties(&store)))
+    {
+        throw win32_exception(hr, "failed to get custom properties");
+    }
+
+    if (FAILED(hr = store->GetNames(&psaNames)))
+    {
+        throw win32_exception(hr, "failed to get custom property names");
+    }
+
+    // Make sure the SAFEARRAY is freed when it falls out of scope.
+    safearray_ptr psaNames_ptr(&psaNames);
+
+    // Lock the SAFEARRAY to get the raw pointer array.
+    if (FAILED(hr = ::SafeArrayLock(psaNames)))
+    {
+        throw win32_exception(hr, "failed to lock custom property name array");
+    }
+
+    auto rgpNames = reinterpret_cast<BSTR*>(psaNames->pvData);
+    auto cNames = psaNames->rgsabound[0].cElements;
+
+    if (0 == cNames)
+    {
+        return;
+    }
+
+    vector<BSTR> names(rgpNames, rgpNames + cNames);
+    sort(names.begin(), names.end(), [&](const BSTR bstrA, const BSTR bstrB) -> bool
+    {
+        return 0 > _wcsicmp((LPCWSTR)bstrA, (LPCWSTR)bstrB);
+    });
+
+    for_each(names.begin(), names.end(), [&](const BSTR bstrName)
+    {
+        variant_t var;
+        if (FAILED(hr = store->GetValue((LPCWSTR)bstrName, &var)))
+        {
+            throw win32_exception(hr, "failed to get custom property value");
+        }
+
+        wcout << L"    " << bstrName << L": " << var << endl;
+    });
+
+    // SafeArrayDeleter will unlock if exception thrown.
+    ::SafeArrayUnlock(psaNames);
+}
+
+void PrintVariant(
+    _In_ LPVARIANT pvt
+)
+{
+
 }
 
 void PrintWorkloads(
