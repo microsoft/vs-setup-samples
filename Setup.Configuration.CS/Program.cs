@@ -86,15 +86,25 @@ internal class Program
             PrintWorkloads(instance2.GetPackages());
         }
 
-        Console.WriteLine("Properties:");
-        PrintProperties(instance2);
+        var properties = instance2.GetProperties();
+        if (properties != null)
+        {
+            Console.WriteLine("Custom properties:");
+            PrintProperties(properties);
+        }
+
+        properties = catalog?.GetCatalogInfo();
+        if (properties != null)
+        {
+            Console.WriteLine("Catalog properties:");
+            PrintProperties(properties);
+        }
 
         Console.WriteLine();
     }
 
-    private static void PrintProperties(ISetupInstance2 instance)
+    private static void PrintProperties(ISetupPropertyStore store)
     {
-        var store = instance.GetProperties();
         var properties = from name in store.GetNames()
                          orderby name
                          select new { Name = name, Value = store.GetValue(name) };

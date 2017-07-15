@@ -28,11 +28,7 @@ void PrintPackageReference(
 );
 
 void PrintProperties(
-    _In_ ISetupInstance2* pInstance
-);
-
-void PrintVariant(
-    _In_ LPVARIANT pvt
+    _In_ ISetupPropertyStore* pStore
 );
 
 void PrintWorkloads(
@@ -192,8 +188,18 @@ void PrintInstance(
         PrintWorkloads(psa);
     }
 
-    wcout << L"Properties:" << endl;
-    PrintProperties(instance);
+    ISetupPropertyStorePtr properties;
+    if (SUCCEEDED(instance->GetProperties(&properties)))
+    {
+        wcout << L"Custom properties:" << endl;
+        PrintProperties(properties);
+    }
+
+    if (catalog && SUCCEEDED(catalog->GetCatalogInfo(&properties)) && properties)
+    {
+        wcout << L"Catalog properties:" << endl;
+        PrintProperties(properties);
+    }
 
     wcout << endl;
 }
@@ -219,21 +225,15 @@ void PrintPackageReference(
 }
 
 void PrintProperties(
-    _In_ ISetupInstance2* pInstance
+    _In_ ISetupPropertyStore* pStore
 )
 {
     HRESULT hr = S_OK;
-    ISetupPropertyStorePtr store;
     LPSAFEARRAY psaNames = NULL;
 
-    if (FAILED(hr = pInstance->GetProperties(&store)))
+    if (FAILED(hr = pStore->GetNames(&psaNames)))
     {
-        throw win32_exception(hr, "failed to get custom properties");
-    }
-
-    if (FAILED(hr = store->GetNames(&psaNames)))
-    {
-        throw win32_exception(hr, "failed to get custom property names");
+        throw win32_exception(hr, "failed to get property names");
     }
 
     // Make sure the SAFEARRAY is freed when it falls out of scope.
@@ -242,7 +242,7 @@ void PrintProperties(
     // Lock the SAFEARRAY to get the raw pointer array.
     if (FAILED(hr = ::SafeArrayLock(psaNames)))
     {
-        throw win32_exception(hr, "failed to lock custom property name array");
+        throw win32_exception(hr, "failed to lock property name array");
     }
 
     auto rgpNames = reinterpret_cast<BSTR*>(psaNames->pvData);
@@ -262,9 +262,9 @@ void PrintProperties(
     for_each(names.begin(), names.end(), [&](const BSTR bstrName)
     {
         variant_t var;
-        if (FAILED(hr = store->GetValue((LPCWSTR)bstrName, &var)))
+        if (FAILED(hr = pStore->GetValue((LPCWSTR)bstrName, &var)))
         {
-            throw win32_exception(hr, "failed to get custom property value");
+            throw win32_exception(hr, "failed to get property value");
         }
 
         wcout << L"    " << bstrName << L": " << var << endl;
@@ -272,13 +272,6 @@ void PrintProperties(
 
     // SafeArrayDeleter will unlock if exception thrown.
     ::SafeArrayUnlock(psaNames);
-}
-
-void PrintVariant(
-    _In_ LPVARIANT pvt
-)
-{
-
 }
 
 void PrintWorkloads(

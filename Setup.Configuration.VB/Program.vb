@@ -70,14 +70,22 @@ Friend Module Program
             PrintWorkloads(instance2.GetPackages())
         End If
 
-        Console.WriteLine("Properties:")
-        PrintProperties(instance2)
+        Dim properties = instance2.GetProperties()
+        If Not properties Is Nothing Then
+            Console.WriteLine("Custom properties:")
+            PrintProperties(properties)
+        End If
+
+        properties = catalog?.GetCatalogInfo()
+        If Not properties Is Nothing Then
+            Console.WriteLine("Catalog properties:")
+            PrintProperties(properties)
+        End If
 
         Console.WriteLine()
     End Sub
 
-    Private Sub PrintProperties(instance As ISetupInstance2)
-        Dim store = instance.GetProperties()
+    Private Sub PrintProperties(store As ISetupPropertyStore)
         Dim properties = From name In store.GetNames()
                          Order By name
                          Select New With {.Name = name, .Value = store.GetValue(name)}
