@@ -86,3 +86,5 @@ public:
 private:
     HRESULT hr;
 };
+
+std::wostream& operator<<(_In_ std::wostream& os, _In_ const variant_t& var);
