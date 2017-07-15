@@ -58,6 +58,11 @@ Friend Module Program
             Console.WriteLine($"InstallationPath: {instance2.GetInstallationPath()}")
         End If
 
+        Dim catalog = TryCast(instance, ISetupInstanceCatalog)
+        If Not catalog Is Nothing Then
+            Console.WriteLine($"IsPrerelease: {catalog.IsPrerelease()}")
+        End If
+
         If (state And InstanceState.Registered) = InstanceState.Registered Then
             Console.WriteLine($"Product: {instance2.GetProduct().GetId()}")
             Console.WriteLine("Workloads:")

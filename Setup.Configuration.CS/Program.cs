@@ -72,6 +72,12 @@ internal class Program
             Console.WriteLine($"InstallationPath: {instance2.GetInstallationPath()}");
         }
 
+        var catalog = instance as ISetupInstanceCatalog;
+        if (catalog != null)
+        {
+            Console.WriteLine($"IsPrerelease: {catalog.IsPrerelease()}");
+        }
+
         if ((state & InstanceState.Registered) == InstanceState.Registered)
         {
             Console.WriteLine($"Product: {instance2.GetProduct().GetId()}");
