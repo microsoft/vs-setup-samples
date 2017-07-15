@@ -7,6 +7,9 @@
 
 #define __nameof(x) L#x
 
+#define FALSESTRING L"False"
+#define TRUESTRING L"True"
+
 struct ModuleDeleter
 {
     void operator()(_In_ HMODULE* phModule)
