@@ -14,11 +14,11 @@ wostream& operator<<(_In_ wostream& os, _In_ const variant_t& var)
     case VT_BOOL:
         if (VARIANT_FALSE == var.boolVal)
         {
-            os << L"false";
+            os << FALSESTRING;
         }
         else
         {
-            os << L"true";
+            os << TRUESTRING;
         }
 
         return os;

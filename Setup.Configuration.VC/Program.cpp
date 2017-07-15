@@ -161,7 +161,7 @@ void PrintInstance(
             throw win32_exception(hr, "failed to get IsPrerelease");
         }
 
-        const auto wzIsPrerelease = VARIANT_TRUE == fIsPrerelease ? L"true" : L"false";
+        const auto wzIsPrerelease = VARIANT_FALSE == fIsPrerelease ? FALSESTRING : TRUESTRING;
         wcout << L"IsPrerelease: " << wzIsPrerelease << endl;
     }
 
