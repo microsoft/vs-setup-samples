@@ -189,7 +189,7 @@ void PrintInstance(
     }
 
     ISetupPropertyStorePtr properties;
-    if (SUCCEEDED(instance->GetProperties(&properties)))
+    if (SUCCEEDED(instance->GetProperties(&properties)) && properties)
     {
         wcout << L"Custom properties:" << endl;
         PrintProperties(properties);
