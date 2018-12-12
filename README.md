@@ -1,7 +1,7 @@
 Visual Studio Setup Configuration Samples
 =========================================
 
-The included samples show how to use the new setup configuration API for discovering instances of Visual Studio "15".
+The included samples show how to use the new setup configuration API for discovering instances of Visual Studio 2017 and newer.
 
 Visual Studio Instances
 -----------------------
