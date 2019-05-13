@@ -49,3 +49,13 @@ We have published a number of related projects that are intended for real-world 
   An installer that can be chained with other packages to locate the latest VSIXInstaller.exe to use for installing VSIX extensions
 * [vswhere](https://github.com/Microsoft/vswhere)
   Locate Visual Studio 2017 and newer installations
+
+License
+-------
+
+Licensed under the MIT license. See [LICENSE.txt](LICENSE.txt) in the project root for license information.
+
+Code of Conduct
+---------------
+
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
